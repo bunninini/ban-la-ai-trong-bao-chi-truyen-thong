@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Trắc nghiệm Báo chí - Bạn là kiểu người nào?</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;padding:0;background:#f4f6f8;color:#111}
+    .wrap{max-width:760px;margin:40px auto;padding:24px;background:#fff;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.08)}
+    h1{margin:0 0 8px;font-size:24px;text-align:center;color:#0b63ff}
+    .question{margin:20px 0;padding:12px;border-radius:6px;background:#fafafa}
+    .answers button{display:block;width:100%;text-align:left;padding:10px;margin:8px 0;border:1px solid #e2e6ea;border-radius:6px;background:white;cursor:pointer}
+    .answers button:hover{transform:translateY(-1px)}
+    .controls{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+    .btn{padding:8px 12px;border-radius:6px;border:none;cursor:pointer}
+    .btn-primary{background:#0b63ff;color:white}
+    .result{padding:20px;text-align:center}
+    .hidden{display:none}
+    .progress{height:8px;background:#e6eefc;border-radius:4px;overflow:hidden;margin-bottom:16px}
+    .progress > i{display:block;height:100%;background:#0b63ff;width:0%}
+  </style>
+</head>
+<body>
+  <div class="wrap" id="app">
+    <h1>Bạn là kiểu người nào trong Báo chí - Truyền thông?</h1>
+    <div class="progress"><i id="prog"></i></div>
+    <div id="quiz"></div>
+
+    <div class="controls">
+      <button id="prev" class="btn">Quay lại</button>
+      <button id="next" class="btn btn-primary">Tiếp</button>
+    </div>
+
+    <div id="result" class="hidden">
+      <div class="result">
+        <h2 id="result-title"></h2>
+        <p id="result-desc"></p>
+        <button id="restart" class="btn">Làm lại</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== DỮ LIỆU CÂU HỎI ======
+    const questions = [
+      {
+        q: "Khi tham gia một dự án truyền thông, bạn thường...",
+        options: [
+          { text: "Chịu trách nhiệm tổng hợp và biên tập nội dung", type: "editor" },
+          { text: "Phụ trách quay và xử lý hậu kỳ", type: "videographer" },
+          { text: "Đi hiện trường, phỏng vấn, tìm tư liệu", type: "reporter" },
+          { text: "Lên kế hoạch, phân công nhiệm vụ cho team", type: "leader" }
+        ]
+      },
+      {
+        q: "Trong nhóm, bạn thường được khen là người...",
+        options: [
+          { text: "Tinh tế trong cách dùng từ và ý tưởng", type: "editor" },
+          { text: "Tỉ mỉ, thẩm mỹ cao, có con mắt hình ảnh", type: "videoeditor" },
+          { text: "Nhiệt huyết, năng động, dám xông pha", type: "reporter" },
+          { text: "Có tầm nhìn và khả năng tổ chức", type: "leader" }
+        ]
+      },
+      {
+        q: "Bạn thấy vui nhất khi...",
+        options: [
+          { text: "Hoàn thiện một bài viết trau chuốt, chặt chẽ", type: "editor" },
+          { text: "Dựng xong một video đầy cảm xúc", type: "videoeditor" },
+          { text: "Đưa tin nóng đầu tiên và chính xác", type: "reporter" },
+          { text: "Cả nhóm thành công nhờ kế hoạch của bạn", type: "leader" }
+        ]
+      },
+      {
+        q: "Nếu có cơ hội, bạn muốn tham gia...",
+        options: [
+          { text: "Ban biên tập nội dung chuyên sâu", type: "editor" },
+          { text: "Đội sản xuất video chuyên nghiệp", type: "videoeditor" },
+          { text: "Ban phóng viên điều tra hoặc hiện trường", type: "reporter" },
+          { text: "Ban quản lý, tổ chức sản xuất", type: "leader" }
+        ]
+      }
+    ];
+
+    // ====== KẾT QUẢ ======
+    const results = {
+      editor: {
+        title: "Nhà biên tập nội dung tài ba",
+        desc: "Bạn có khả năng ngôn ngữ sắc sảo, biết cách làm cho mọi nội dung trở nên hấp dẫn, mạch lạc và đúng thông điệp."
+      },
+      videoeditor: {
+        title: "Nhà biên dựng video hoàn mỹ",
+        desc: "Bạn có gu hình ảnh tinh tế, khả năng cảm nhịp và biết cách kể chuyện bằng âm thanh và khung hình."
+      },
+      reporter: {
+        title: "Nhà phóng viên nhiệt thành",
+        desc: "Bạn dấn thân, tò mò và luôn khao khát khám phá sự thật — bạn sống vì tin tức và công chúng."
+      },
+      leader: {
+        title: "Nhà lãnh đạo hoàn hảo",
+        desc: "Bạn có tầm nhìn, biết tổ chức con người và công việc, tạo cảm hứng để đội ngũ phát huy tối đa năng lực."
+      }
+    };
+
+    // ====== TRẠNG THÁI ======
+    const state = { index: 0, answers: [] };
+
+    const quizEl = document.getElementById('quiz');
+    const nextBtn = document.getElementById('next');
+    const prevBtn = document.getElementById('prev');
+    const resultEl = document.getElementById('result');
+    const resultTitle = document.getElementById('result-title');
+    const resultDesc = document.getElementById('result-desc');
+    const restartBtn = document.getElementById('restart');
+    const prog = document.getElementById('prog');
+
+    function render() {
+      const q = questions[state.index];
+      quizEl.innerHTML = `
+        <div class="question">
+          <strong>Câu ${state.index + 1}/${questions.length}</strong>
+          <p>${q.q}</p>
+          <div class="answers">
+            ${q.options.map((o, idx) => `
+              <button data-type="${o.type}" data-idx="${idx}">
+                ${o.text}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      const percent = Math.round((state.index) / questions.length * 100);
+      prog.style.width = percent + "%";
+      prevBtn.style.visibility = state.index === 0 ? 'hidden' : 'visible';
+      nextBtn.textContent = state.index === questions.length - 1 ? 'Hoàn tất' : 'Tiếp';
+
+      quizEl.querySelectorAll('.answers button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.answers[state.index] = btn.dataset.type;
+          quizEl.querySelectorAll('button').forEach(b => b.style.borderColor = '#e2e6ea');
+          btn.style.borderColor = '#0b63ff';
+        });
+      });
+
+      if (state.answers[state.index]) {
+        const selected = quizEl.querySelector(`button[data-type="${state.answers[state.index]}"]`);
+        if (selected) selected.style.borderColor = '#0b63ff';
+      }
+    }
+
+    function showResult() {
+      // Đếm xem user chọn loại nào nhiều nhất
+      const counts = {};
+      state.answers.forEach(t => { counts[t] = (counts[t] || 0) + 1; });
+      const topType = Object.keys(counts).reduce((a,b)=> counts[a]>counts[b]?a:b);
+
+      const res = results[topType];
+      resultTitle.textContent = res.title;
+      resultDesc.textContent = res.desc;
+
+      quizEl.classList.add('hidden');
+      document.querySelector('.controls').classList.add('hidden');
+      resultEl.classList.remove('hidden');
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (state.index === questions.length - 1) {
+        showResult();
+        return;
+      }
+      state.index++;
+      render();
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (state.index > 0) state.index--;
+      render();
+    });
+
+    restartBtn.addEventListener('click', () => {
+      state.index = 0;
+      state.answers = [];
+      quizEl.classList.remove('hidden');
+      document.querySelector('.controls').classList.remove('hidden');
+      resultEl.classList.add('hidden');
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
