@@ -1,459 +1,252 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Quiz: Bạn là kiểu người nào trong Báo chí & Truyền thông?</title>
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bạn là ai trong lĩnh vực Báo chí - Truyền thông?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --accent:#ff7a59;
-      --accent-2:#ffd166;
-      --muted:#6b7280;
-      --card:#ffffff;
-      --bg-overlay: rgba(4,6,15,0.45);
+    body {
+      background: linear-gradient(135deg, #ffd1dc, #ffe6f2);
+      font-family: 'Poppins', sans-serif;
+      color: #333;
+      margin: 0;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:'Poppins',system-ui,Segoe UI,Roboto,Arial;background:#091421;color:#0b1220}
-    /* Background image (newsroom vibe) */
-    body::before{
-      content:"";
-      position:fixed;inset:0;
-      background-image: url('https://source.unsplash.com/1600x900/?newsroom,studio,journalism,editor,video');
-      background-size:cover;background-position:center;
-      filter:blur(4px) brightness(0.6) contrast(0.9);
-      z-index:-2;
+    h1 {
+      font-family: 'Playfair Display', serif;
+      color: #ff1493;
+      font-size: 2.2em;
+      margin: 30px 15px;
+      text-shadow: 0 0 5px rgba(255, 105, 180, 0.2);
     }
-    /* overlay */
-    body::after{
-      content:"";position:fixed;inset:0;background:linear-gradient(120deg, rgba(8,10,28,0.5), rgba(2,6,18,0.4));
-      z-index:-1;
+    #quizArea {
+      background: #fff0f6;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(255, 105, 180, 0.2);
+      padding: 30px;
+      max-width: 600px;
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-
-    .wrap{
-      max-width:900px;margin:32px auto;padding:28px;border-radius:12px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-      box-shadow: 0 10px 40px rgba(2,6,22,0.6);
-      backdrop-filter: blur(6px);
-      color:#fff;
-      min-height:520px;
-      display:flex;flex-direction:column;gap:18px;
+    #progress {width:100%;background:#ffe6f2;border-radius:10px;margin-bottom:20px;height:10px;overflow:hidden;}
+    #prog {height:100%;width:0%;background:#ff66b2;transition:width 0.3s ease;}
+    #qText {font-size:1.2em;margin-bottom:25px;font-weight:600;color:#cc0066;}
+    .ans-btn {
+      display:block;background:white;border:2px solid #ffb6c1;border-radius:12px;
+      padding:12px 20px;margin:8px 0;width:100%;font-size:1em;text-align:left;
+      cursor:pointer;transition:all 0.3s ease;
     }
-
-    header{display:flex;align-items:center;gap:16px}
-    .logo{
-      width:68px;height:68px;border-radius:10px;flex-shrink:0;
-      background:linear-gradient(135deg,var(--accent),#ffbb6b);
-      display:flex;align-items:center;justify-content:center;font-family:'Playfair Display';font-weight:600;font-size:20px;color:#111;
-      box-shadow:0 6px 18px rgba(0,0,0,0.35);
+    .ans-btn:hover {background:#ffe6ef;transform:scale(1.02);}
+    .ans-btn.selected {background:#ffb6c1;color:white;border-color:#ff66b2;}
+    button.nav {
+      background:#ff66b2;color:white;border:none;padding:10px 25px;
+      border-radius:10px;margin:15px 10px 0;cursor:pointer;
+      font-family:'Poppins',sans-serif;font-weight:600;transition:0.3s;
     }
-    h1{margin:0;font-family:'Playfair Display',serif;font-weight:600;font-size:22px}
-    p.lead{margin:0;color:var(--muted);font-size:14px}
-
-    /* card */
-    .card{
-      background: rgba(255,255,255,0.03);
-      border-radius:10px;padding:18px;border:1px solid rgba(255,255,255,0.04);
+    button.nav:hover {background:#ff3385;transform:scale(1.05);}
+    #resultWrap {
+      display:none;background:#fff0f6;border-radius:20px;padding:30px;
+      box-shadow:0 4px 15px rgba(255,105,180,0.2);max-width:600px;width:90%;
     }
-
-    .progress{
-      height:10px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden;
+    #resImg {width:100%;border-radius:15px;margin-top:15px;}
+    #resTitle {font-family:'Playfair Display',serif;color:#cc0066;font-size:1.6em;margin-bottom:10px;}
+    #resQuote {font-style:italic;color:#ff3385;margin-top:10px;}
+    #btnRestart,#btnShare {
+      background:#ff66b2;border:none;color:white;padding:12px 25px;border-radius:10px;
+      margin:10px;font-family:'Poppins',sans-serif;font-weight:600;cursor:pointer;transition:all 0.3s;
     }
-    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%;transition:width .5s ease}
-
-    .question-area{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
-    .q-left{flex:1 1 520px}
-    .q-right{width:220px;min-width:180px}
-
-    .question-title{font-weight:600;margin-bottom:8px}
-    .question-text{margin:0 0 16px;color:#e6eefc}
-
-    .answers{display:grid;grid-template-columns:1fr;gap:12px}
-    .ans-btn{
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border:1px solid rgba(255,255,255,0.06);color:#fff;padding:12px 14px;border-radius:10px;text-align:left;cursor:pointer;font-weight:500;
-      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
-      position:relative;overflow:hidden;
-    }
-    .ans-btn:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(2,6,22,0.6)}
-    .ans-btn.selected{border-color:rgba(255,255,255,0.9);box-shadow:0 14px 40px rgba(0,0,0,0.6);transform:translateY(-6px)}
-    .ans-btn .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.12);display:inline-block;margin-right:10px;vertical-align:middle}
-    .ans-btn.selected .dot{background:linear-gradient(90deg,var(--accent),var(--accent-2));box-shadow:0 6px 18px rgba(255,122,89,0.18)}
-
-    .controls{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
-    .btn{padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
-    .btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.06)}
-    .btn.primary{background:linear-gradient(90deg,var(--accent),#ffaf6e);color:#111}
-
-    /* right column preview */
-    .preview{
-      text-align:center;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border:1px solid rgba(255,255,255,0.03)
-    }
-    .preview img{width:100%;border-radius:8px;margin-bottom:10px;display:block}
-
-    /* result area */
-    #resultWrap{display:none;animation:fadeInUp .6s ease both}
-    .result-card{display:flex;gap:20px;align-items:center}
-    .res-img{width:220px;flex-shrink:0}
-    .res-img img{width:100%;border-radius:10px}
-    .res-body h2{margin:0 0 6px;font-family:'Playfair Display',serif}
-    .res-body p{margin:0;color:#e9eef9}
-    .quote{margin-top:12px;color:var(--accent-2);font-weight:600;font-size:15px}
-
-    /* small screens */
-    @media (max-width:760px){
-      .question-area{flex-direction:column}
-      .q-right{width:100%}
-      .res-img{width:100%}
-      header{flex-direction:column;align-items:flex-start;gap:8px}
-    }
-
-    /* animations */
-    @keyframes fadeInUp {
-      from { opacity:0; transform: translateY(12px) }
-      to { opacity:1; transform: translateY(0) }
-    }
-    @keyframes pulse {
-      0%{transform:scale(1)}
-      50%{transform:scale(1.02)}
-      100%{transform:scale(1)}
-    }
-
-    /* thin footer */
-    footer{color:rgba(255,255,255,0.5);font-size:13px;text-align:center;margin-top:auto}
+    #btnRestart:hover,#btnShare:hover {background:#ff3385;transform:scale(1.07);}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="logo">BC</div>
-      <div>
-        <h1>Bạn là ai trong Báo chí & Truyền thông?</h1>
-        <p class="lead">Trả lời 10 câu — kết quả sẽ cho thấy vị trí phù hợp nhất với phong cách của bạn.</p>
-      </div>
-    </header>
+  <h1>Bạn là ai trong lĩnh vực Báo chí - Truyền thông?</h1>
+  <div id="progress"><div id="prog"></div></div>
 
-    <div class="card">
-      <div class="progress" aria-hidden><i id="prog"></i></div>
-
-      <div id="quizArea" class="question-area">
-        <div class="q-left">
-          <div class="question-title">Câu <span id="qNum">1</span> / 10</div>
-          <div class="question-text" id="qText">...</div>
-
-          <div class="answers" id="answers"></div>
-
-          <div class="controls" style="margin-top:18px;">
-            <button class="btn ghost" id="prevBtn">Quay lại</button>
-            <button class="btn primary" id="nextBtn">Tiếp</button>
-          </div>
-        </div>
-
-        <div class="q-right">
-          <div class="preview">
-            <img src="https://source.unsplash.com/600x400/?journalist,newsroom" alt="preview">
-            <div id="hintText">Chọn câu trả lời phù hợp nhất với bạn.</div>
-          </div>
-        </div>
-      </div>
-
-      <div id="resultWrap" class="card" role="region" aria-live="polite">
-        <div class="result-card">
-          <div class="res-img"><img id="resImg" src="" alt=""></div>
-          <div class="res-body">
-            <h2 id="resTitle"></h2>
-            <p id="resDesc"></p>
-            <div class="quote" id="resQuote"></div>
-            <div style="margin-top:12px;">
-              <button class="btn ghost" id="btnRestart">Làm lại</button>
-              <button class="btn primary" id="btnShare">Chia sẻ</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
+  <div id="quizArea">
+    <div id="qText"></div>
+    <div id="answers"></div>
+    <div>
+      <button class="nav" id="prevBtn">Quay lại</button>
+      <button class="nav" id="nextBtn">Tiếp</button>
     </div>
-
-    <footer>Thiết kế bởi bạn — code bởi ChatGPT. Đổi nội dung, ảnh dễ dàng trong code.</footer>
   </div>
 
-<script>
-  // ===== QUESTIONS (10) - each option assigns points to one of 5 roles =====
-  const roles = ['editor','videoeditor','reporter','cameraman','leader'];
+  <div id="resultWrap">
+    <h2 id="resTitle"></h2>
+    <p id="resDesc"></p>
+    <p id="resQuote"></p>
+    <img id="resImg" src="" alt="">
+    <div>
+      <button id="btnRestart">Chơi lại</button>
+      <button id="btnShare">Chia sẻ</button>
+    </div>
+  </div>
 
-  const questions = [
-    { q: "Bạn thích phần nào của một bài sản xuất nhất?", options:[
-      {t:'editor', txt:"Chỉnh sửa và làm cho nội dung mượt mà"},
-      {t:'cameraman', txt:"Góc máy, ánh sáng, hình ảnh bắt mắt"},
-      {t:'reporter', txt:"Đi hiện trường, phỏng vấn trực tiếp"},
-      {t:'videoeditor', txt:"Dựng, ghép nhạc, làm hiệu ứng"},
-      {t:'leader', txt:"Lên kế hoạch và phân công công việc"}
-    ]},
-    { q: "Bạn phản ứng thế nào khi deadline đến?", options:[
-      {t:'leader', txt:"Phân bổ lại nhân lực và ưu tiên task"},
-      {t:'editor', txt:"Tập trung chỉnh từng câu chữ cho chính xác"},
-      {t:'reporter', txt:"Sẵn sàng xông pha để hoàn thành phóng sự"},
-      {t:'videoeditor', txt:"Dựng nhanh prototype rồi tinh chỉnh"},
-      {t:'cameraman', txt:"Đảm bảo quay nhanh nhưng vẫn chất lượng"}
-    ]},
-    { q: "Khi đọc bài/ xem video, bạn chú ý nhất tới điều gì?", options:[
-      {t:'editor', txt:"Mạch logic, dẫn dắt câu chuyện"},
-      {t:'videoeditor', txt:"Cảm xúc do dựng tạo nên"},
-      {t:'cameraman', txt:"Góc máy, khung hình, ánh sáng"},
-      {t:'reporter', txt:"Tính xác thực và nguồn tin"},
-      {t:'leader', txt:"Tính tổ chức và workflow"}
-    ]},
-    { q: "Bạn mạnh nhất kỹ năng nào?", options:[
-      {t:'reporter', txt:"Tìm nguồn, phỏng vấn, điều tra"},
-      {t:'editor', txt:"Viết - sửa - làm headline thu hút"},
-      {t:'videoeditor', txt:"Dựng ảnh, âm thanh, nhịp điệu"},
-      {t:'leader', txt:"Quản lý thời gian, ra quyết định"},
-      {t:'cameraman', txt:"Kỹ thuật quay và bố cục hình ảnh"}
-    ]},
-    { q: "Bạn thích môi trường làm việc nào nhất?", options:[
-      {t:'reporter', txt:"Năng động, thay đổi, nhiều fieldwork"},
-      {t:'leader', txt:"Có cấu trúc, team rõ trách nhiệm"},
-      {t:'videoeditor', txt:"Yên tĩnh để dựng, sáng tạo hậu kỳ"},
-      {t:'cameraman', txt:"Trường quay, set production"},
-      {t:'editor', txt:"Không khí biên tập sâu, deadline rõ ràng"}
-    ]},
-    { q: "Một bài viết/ video hay theo bạn là:", options:[
-      {t:'editor', txt:"Ngắn gọn, rõ ràng, có điểm nhấn ngôn từ"},
-      {t:'videoeditor', txt:"Có nhịp điệu và cao trào cảm xúc"},
-      {t:'reporter', txt:"Mang đến thông tin giá trị cho công chúng"},
-      {t:'cameraman', txt:"Gợi hình ảnh mạnh mẽ trong từng khung hình"},
-      {t:'leader', txt:"Thể hiện quy trình sản xuất bài chuyên nghiệp"}
-    ]},
-    { q: "Bạn thường đóng vai trò nào trong nhóm dự án?", options:[
-      {t:'leader', txt:"Người điều phối, kết nối"},
-      {t:'editor', txt:"Người chỉnh sửa cuối cùng trước khi xuất bản"},
-      {t:'videoeditor', txt:"Người ghép, làm flow video"},
-      {t:'cameraman', txt:"Người thu hình và đảm bảo kỹ thuật"},
-      {t:'reporter', txt:"Người đi thu thập tư liệu hiện trường"}
-    ]},
-    { q: "Bạn đánh giá thế nào về chi tiết kỹ thuật (codec, ánh sáng, format)?", options:[
-      {t:'cameraman', txt:"Rất quan trọng — mình chăm",},
-      {t:'videoeditor', txt:"Quan trọng cho hậu kỳ mượt",},
-      {t:'editor', txt:"Cũng cần nhưng không phải ưu tiên số 1",},
-      {t:'leader', txt:"Quan trọng cho deliverables và timeline",},
-      {t:'reporter', txt:"Chỉ cần đủ để truyền tải thông tin"}
-    ]},
-    { q: "Khi có ý tưởng lớn cho một series, bạn muốn làm gì đầu tiên?", options:[
-      {t:'leader', txt:"Lập roadmap, KPI và phân công"},
-      {t:'editor', txt:"Xây dựng tông giọng, outline nội dung"},
-      {t:'reporter', txt:"Lên kế hoạch fieldwork và nguồn liên hệ"},
-      {t:'videoeditor', txt:"Sáng tạo style visual cho series"},
-      {t:'cameraman', txt:"Chuẩn bị gear và storyboard khung hình"}
-    ]},
-    { q: "Bạn muốn khán giả nhớ bạn vì điều gì nhất?", options:[
-      {t:'editor', txt:"Nội dung sâu sắc và chuẩn mực ngôn từ"},
-      {t:'videoeditor', txt:"Dựng video cuốn hút, cảm xúc"},
-      {t:'reporter', txt:"Tinh thần dấn thân, đưa tin chính xác"},
-      {t:'cameraman', txt:"Những khung hình khó quên"},
-      {t:'leader', txt:"Khả năng dẫn dắt và tạo ra sản phẩm hoàn hảo"}
-    ]}
-  ];
+  <script>
+    // ===== 10 QUESTIONS =====
+    const questions = [
+      {q:"Bạn cảm thấy hứng thú nhất khi...",options:[
+        {txt:"Phân tích, chọn lọc thông tin và biên tập nội dung cho thật chỉn chu.",t:"editor"},
+        {txt:"Quay và cắt dựng một video sống động, truyền cảm hứng.",t:"videoeditor"},
+        {txt:"Đi hiện trường, phỏng vấn và ghi nhận câu chuyện từ thực tế.",t:"reporter"},
+        {txt:"Ghi lại những khoảnh khắc bằng ống kính, ánh sáng và khung hình đẹp.",t:"cameraman"},
+        {txt:"Lên kế hoạch, định hướng nội dung và dẫn dắt cả đội cùng làm.",t:"leader"}]},
+      {q:"Nếu bạn được chọn một vai trò trong nhóm sản xuất, bạn muốn là người...",options:[
+        {txt:"Kiểm tra ngữ pháp, chỉnh sửa câu chữ, đảm bảo nội dung logic.",t:"editor"},
+        {txt:"Tạo dựng không khí bằng hình ảnh và âm thanh.",t:"videoeditor"},
+        {txt:"Viết lời dẫn, đặt câu hỏi phỏng vấn, tìm thông tin độc quyền.",t:"reporter"},
+        {txt:"Điều chỉnh góc máy, ánh sáng và bối cảnh cho hoàn hảo.",t:"cameraman"},
+        {txt:"Phân công nhiệm vụ, đưa ra quyết định cuối cùng.",t:"leader"}]},
+      {q:"Khi gặp áp lực deadline, bạn thường...",options:[
+        {txt:"Tập trung rà soát, chỉnh lỗi từng chi tiết để không bị sai sót.",t:"editor"},
+        {txt:"Giữ bình tĩnh, xử lý kỹ thuật nhanh gọn để kịp tiến độ.",t:"videoeditor"},
+        {txt:"Chạy đua với thời gian nhưng vẫn cố gắng hoàn thiện nội dung gốc.",t:"reporter"},
+        {txt:"Cố quay cho đủ góc, đúng bố cục dù thời gian gấp.",t:"cameraman"},
+        {txt:"Cố gắng động viên cả team và phân chia việc hợp lý hơn.",t:"leader"}]},
+      {q:"Phong cách làm việc của bạn là...",options:[
+        {txt:"Tỉ mỉ, kỹ lưỡng, không bỏ qua chi tiết nhỏ nào.",t:"editor"},
+        {txt:"Sáng tạo, linh hoạt và thích thử nghiệm nhiều phong cách.",t:"videoeditor"},
+        {txt:"Năng động, hướng ngoại và thích giao tiếp.",t:"reporter"},
+        {txt:"Quan sát tốt, trực giác thẩm mỹ cao.",t:"cameraman"},
+        {txt:"Chiến lược, nhìn được bức tranh toàn cảnh.",t:"leader"}]},
+      {q:"Bạn cảm thấy vui nhất khi...",options:[
+        {txt:"Nhìn bài viết mình biên tập được đăng lên với nội dung hoàn hảo.",t:"editor"},
+        {txt:"Video mình dựng được nhiều người chia sẻ và khen sáng tạo.",t:"videoeditor"},
+        {txt:"Bản tin do mình thực hiện lên sóng, khán giả nhớ đến mình.",t:"reporter"},
+        {txt:"Những thước phim mình quay được dùng làm điểm nhấn hình ảnh.",t:"cameraman"},
+        {txt:"Cả nhóm hoàn thành dự án lớn suôn sẻ nhờ sự dẫn dắt của mình.",t:"leader"}]},
+      {q:"Nếu được chọn 1 kỹ năng để học sâu hơn, bạn sẽ chọn...",options:[
+        {txt:"Kỹ năng biên tập chuyên sâu.",t:"editor"},
+        {txt:"Kỹ thuật dựng phim chuyên nghiệp.",t:"videoeditor"},
+        {txt:"Kỹ năng phỏng vấn và viết tin nóng.",t:"reporter"},
+        {txt:"Kỹ năng quay và ánh sáng điện ảnh.",t:"cameraman"},
+        {txt:"Kỹ năng quản lý dự án truyền thông.",t:"leader"}]},
+      {q:"Bạn thường được mọi người nhận xét là...",options:[
+        {txt:"Khó tính nhưng rất cẩn thận.",t:"editor"},
+        {txt:"Hơi mơ mộng nhưng đầy ý tưởng mới.",t:"videoeditor"},
+        {txt:"Hoạt ngôn, thân thiện và nhanh nhạy.",t:"reporter"},
+        {txt:"Ít nói nhưng quan sát tinh tế.",t:"cameraman"},
+        {txt:"Có tố chất lãnh đạo và biết kết nối mọi người.",t:"leader"}]},
+      {q:"Nếu làm việc nhóm, bạn sẽ là người...",options:[
+        {txt:"Đề xuất sửa câu chữ, cấu trúc cho trôi chảy.",t:"editor"},
+        {txt:"Tổng hợp hình, nhạc, cắt dựng phần hình ảnh.",t:"videoeditor"},
+        {txt:"Tự nguyện ra ngoài lấy thông tin.",t:"reporter"},
+        {txt:"Phụ trách máy quay, góc máy.",t:"cameraman"},
+        {txt:"Điều phối, kiểm tra tiến độ chung.",t:"leader"}]},
+      {q:"Bạn thích môi trường làm việc nào nhất?",options:[
+        {txt:"Trong phòng, yên tĩnh để tập trung chỉnh sửa nội dung.",t:"editor"},
+        {txt:"Phòng dựng với âm thanh và hình ảnh sống động.",t:"videoeditor"},
+        {txt:"Bên ngoài, giữa các sự kiện, nơi có nhiều câu chuyện thật.",t:"reporter"},
+        {txt:"Trên phim trường hoặc hiện trường quay.",t:"cameraman"},
+        {txt:"Ở vị trí trung tâm, nơi có thể bao quát và chỉ đạo.",t:"leader"}]},
+      {q:"Một từ mô tả bạn chính xác nhất là...",options:[
+        {txt:"Tỉ mỉ.",t:"editor"},
+        {txt:"Sáng tạo.",t:"videoeditor"},
+        {txt:"Nhiệt huyết.",t:"reporter"},
+        {txt:"Quan sát.",t:"cameraman"},
+        {txt:"Trách nhiệm.",t:"leader"}]}
+    ];
 
-  // ===== RESULTS data =====
-  const results = {
-    editor: {
-      title: "Nhà biên tập nội dung tài ba",
-      desc: "Bạn có con mắt ngôn ngữ sắc sảo, biết gọt giũa nội dung để truyền tải thông điệp rõ ràng và cuốn hút.",
-      quote: "Nội dung chuẩn mực là nền tảng của mọi câu chuyện hay.",
-      img: "https://source.unsplash.com/600x600/?editor,writing,desk"
-    },
-    videoeditor: {
-      title: "Nhà biên dựng video hoàn mỹ",
-      desc: "Bạn kể chuyện bằng nhịp điệu, âm thanh và dựng — biến thô thành tinh để chạm cảm xúc khán giả.",
-      quote: "Dựng tốt là kể được câu chuyện mà lời chưa kịp nói.",
-      img: "https://source.unsplash.com/600x600/?video-editing,editor,editing"
-    },
-    reporter: {
-      title: "Nhà phóng viên nhiệt thành",
-      desc: "Bạn dấn thân, luôn tìm kiếm nguồn tin và kể lại sự thật cho cộng đồng một cách chính xác và nhanh nhạy.",
-      quote: "Tin tức là nhiệm vụ — chứ không chỉ là nghề.",
-      img: "https://source.unsplash.com/600x600/?reporter,journalist,microphone"
-    },
-    cameraman: {
-      title: "Nhà quay phim kỳ tài",
-      desc: "Bạn có con mắt điện ảnh: biết bắt khoảnh khắc, bố cục và ánh sáng để nói thay lời nói.",
-      quote: "Một khung hình đúng có giá trị hơn nghìn lời nói.",
-      img: "https://source.unsplash.com/600x600/?camera,filmmaking,cinematography"
-    },
-    leader: {
-      title: "Nhà lãnh đạo hoàn hảo",
-      desc: "Bạn biết tổ chức, phân công, dẫn dắt đội ngũ để biến ý tưởng thành sản phẩm hoàn chỉnh và có ảnh hưởng.",
-      quote: "Dẫn dắt tốt là tạo ra môi trường để mọi người tỏa sáng.",
-      img: "https://source.unsplash.com/600x600/?teamwork,leader,management"
-    }
-  };
+    // ===== RESULTS =====
+    const results = {
+      editor:{title:"Biên tập viên tinh tế",desc:"Bạn có khả năng ngôn ngữ và tư duy logic vượt trội. Bạn yêu sự chính xác và chi tiết, đảm bảo mọi sản phẩm truyền thông đều chỉn chu nhất.",quote:"“Ngôn từ là vũ khí sắc bén, và bạn là người mài giũa chúng tinh tế nhất.”",img:"https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=60"},
+      videoeditor:{title:"Người dựng phim sáng tạo",desc:"Bạn nhìn thế giới bằng cảm xúc hình ảnh. Mỗi thước phim qua tay bạn đều trở nên sinh động và truyền cảm hứng.",quote:"“Câu chuyện được kể lại bằng ánh sáng và nhịp điệu – bạn là người điều khiển cả hai.”",img:"https://images.unsplash.com/photo-1581092334641-44a6b9f8c18e?auto=format&fit=crop&w=900&q=60"},
+      reporter:{title:"Phóng viên năng động",desc:"Bạn đam mê khám phá, tìm kiếm sự thật và kể lại bằng giọng kể hấp dẫn. Không có thử thách nào khiến bạn chùn bước.",quote:"“Mỗi câu chuyện là một hành trình, và bạn luôn là người dám đi đầu.”",img:"https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=900&q=60"},
+      cameraman:{title:"Người quay phim tinh tế",desc:"Bạn có con mắt nghệ thuật và khả năng nắm bắt khoảnh khắc vàng. Ánh sáng, bố cục, cảm xúc — bạn điều khiển tất cả.",quote:"“Thế giới qua ống kính của bạn luôn trở nên có hồn.”",img:"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=900&q=60"},
+      leader:{title:"Người lãnh đạo chiến lược",desc:"Bạn có tầm nhìn xa, khả năng tổ chức và dẫn dắt đội nhóm xuất sắc. Bạn truyền cảm hứng để mọi người cùng tỏa sáng.",quote:"“Người lãnh đạo giỏi không cần nói lớn, vì hành động của họ đủ để dẫn đường.”",img:"https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=60"}
+    };
 
-  // ===== state =====
-  const state = { index: 0, answers: Array(questions.length).fill(null) };
+    // ===== LOGIC =====
+    const roles = ['editor','videoeditor','reporter','cameraman','leader'];
+    const state = { index: 0, answers: Array(questions.length).fill(null) };
+    const qText = document.getElementById('qText');
+    const answersWrap = document.getElementById('answers');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const prog = document.getElementById('prog');
+    const resultWrap = document.getElementById('resultWrap');
+    const resTitle = document.getElementById('resTitle');
+    const resDesc = document.getElementById('resDesc');
+    const resQuote = document.getElementById('resQuote');
+    const resImg = document.getElementById('resImg');
+    const btnRestart = document.getElementById('btnRestart');
+    const btnShare = document.getElementById('btnShare');
 
-  // DOM refs
-  const qNum = document.getElementById('qNum');
-  const qText = document.getElementById('qText');
-  const answersWrap = document.getElementById('answers');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const prog = document.getElementById('prog');
-
-  const resultWrap = document.getElementById('resultWrap');
-  const resTitle = document.getElementById('resTitle');
-  const resDesc = document.getElementById('resDesc');
-  const resQuote = document.getElementById('resQuote');
-  const resImg = document.getElementById('resImg');
-  const btnRestart = document.getElementById('btnRestart');
-  const btnShare = document.getElementById('btnShare');
-
-  // render question
-  function renderQuestion(){
-    const i = state.index;
-    const q = questions[i];
-    qNum.textContent = (i+1);
-    qText.textContent = q.q;
-    answersWrap.innerHTML = q.options.map((o,idx) => {
-      const sel = state.answers[i] === idx ? ' selected' : '';
-      return `<button class="ans-btn${sel}" data-idx="${idx}" data-role="${o.t}">
-        <span class="dot"></span>${o.txt}
-      </button>`;
-    }).join('');
-    // update progress
-    const percent = Math.round((i) / (questions.length) * 100);
-    prog.style.width = percent + '%';
-
-    // add listeners
-    answersWrap.querySelectorAll('.ans-btn').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const idx = Number(btn.dataset.idx);
-        state.answers[i] = idx;
-        // visual
-        answersWrap.querySelectorAll('.ans-btn').forEach(b=> b.classList.remove('selected'));
-        btn.classList.add('selected');
+    function renderQuestion(){
+      const i = state.index;
+      const q = questions[i];
+      qText.textContent = q.q;
+      answersWrap.innerHTML = q.options.map((o,idx)=>{
+        const sel = state.answers[i] === idx ? ' selected' : '';
+        return `<button class="ans-btn${sel}" data-idx="${idx}" data-role="${o.t}">${o.txt}</button>`;
+      }).join('');
+      const percent = Math.round((i)/questions.length*100);
+      prog.style.width = percent + '%';
+      answersWrap.querySelectorAll('.ans-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const idx = Number(btn.dataset.idx);
+          state.answers[i] = idx;
+          answersWrap.querySelectorAll('.ans-btn').forEach(b=> b.classList.remove('selected'));
+          btn.classList.add('selected');
+        });
       });
-    });
+      prevBtn.style.visibility = i === 0 ? 'hidden' : 'visible';
+      nextBtn.textContent = i === questions.length - 1 ? 'Xem kết quả' : 'Tiếp';
+    }
 
-    // prev btn visibility
-    prevBtn.style.visibility = i === 0 ? 'hidden' : 'visible';
-    nextBtn.textContent = i === questions.length - 1 ? 'Xem kết quả' : 'Tiếp';
-  }
+    function computeResult(){
+      const counts = { editor:0, videoeditor:0, reporter:0, cameraman:0, leader:0 };
+      state.answers.forEach((ans, idx)=>{
+        if(ans===null) return;
+        const role = questions[idx].options[ans].t;
+        if(counts.hasOwnProperty(role)) counts[role]++;
+      });
+      let top = roles[0];
+      for(const r of roles){ if(counts[r] > counts[top]) top = r; }
+      return {top, counts};
+    }
 
-  // compute result (count points per role)
-  function computeResult(){
-    const counts = { editor:0, videoeditor:0, reporter:0, cameraman:0, leader:0 };
-    // each chosen option adds 1 to related role
-    state.answers.forEach((ans, idx) => {
-      if (ans === null) return;
-      const role = questions[idx].options[ans].t;
-      if (role && counts.hasOwnProperty(role)) counts[role] += 1;
-    });
-    // find top role; if tie, priority order in roles array
-    let top = roles[0];
-    for (const r of roles){
-      if (counts[r] > counts[top]) top = r;
-      else if (counts[r] === counts[top]) {
-        // keep earlier role (priority) - no change
+    function showResult(){
+      const {top} = computeResult();
+      const data = results[top];
+      resTitle.textContent = data.title;
+      resDesc.textContent = data.desc;
+      resQuote.textContent = data.quote;
+      resImg.src = data.img + "&" + Date.now();
+      document.getElementById('quizArea').style.display = 'none';
+      resultWrap.style.display = 'block';
+      prog.style.width = '100%';
+    }
+
+    nextBtn.addEventListener('click', ()=>{
+      if(state.answers[state.index] === null){
+        answersWrap.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:200});
+        return;
       }
-    }
-    return {top, counts};
-  }
-
-  function showResult(){
-    const {top, counts} = computeResult();
-    const data = results[top];
-
-    // populate UI
-    resTitle.textContent = data.title;
-    resDesc.textContent = data.desc;
-    resQuote.textContent = data.quote;
-    resImg.src = data.img + "&" + Date.now(); // prevent aggressive cache
-
-    // hide quiz area and show result
-    document.getElementById('quizArea').style.display = 'none';
-    resultWrap.style.display = 'block';
-    // update progress to 100
-    prog.style.width = '100%';
-
-    // update URL hash so user can share direct result (simple)
-    history.replaceState(null, '', '#result=' + top);
-  }
-
-  // navigation handlers
-  nextBtn.addEventListener('click', ()=>{
-    // require an answer before move forward
-    if (state.answers[state.index] === null) {
-      // brief visual cue
-      answersWrap.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:200,iterations:1});
-      return;
-    }
-    if (state.index < questions.length - 1) {
-      state.index++;
-      renderQuestion();
-    } else {
-      // all answered -> compute and show
-      showResult();
-    }
-  });
-
-  prevBtn.addEventListener('click', ()=>{
-    if (state.index > 0) {
-      state.index--;
-      renderQuestion();
-    }
-  });
-
-  btnRestart.addEventListener('click', ()=>{
-    // reset
-    state.index = 0;
-    state.answers = Array(questions.length).fill(null);
-    resultWrap.style.display = 'none';
-    document.getElementById('quizArea').style.display = 'flex';
-    prog.style.width = '0%';
-    history.replaceState(null,'',location.pathname);
+      if(state.index < questions.length-1){ state.index++; renderQuestion(); }
+      else showResult();
+    });
+    prevBtn.addEventListener('click', ()=>{ if(state.index>0){ state.index--; renderQuestion(); }});
+    btnRestart.addEventListener('click', ()=>{
+      state.index=0;state.answers=Array(questions.length).fill(null);
+      resultWrap.style.display='none';document.getElementById('quizArea').style.display='flex';
+      prog.style.width='0%';renderQuestion();
+    });
+    btnShare.addEventListener('click', async ()=>{
+      const {top}=computeResult();const url=location.origin+location.pathname+'#result='+top;
+      try{await navigator.clipboard.writeText(url);
+        btnShare.textContent='Link đã sao chép!';setTimeout(()=>btnShare.textContent='Chia sẻ',2000);}
+      catch(e){alert('Không thể sao chép: '+url);}
+    });
     renderQuestion();
-  });
-
-  // share: simple copy link with hash to clipboard
-  btnShare.addEventListener('click', async ()=>{
-    const {top} = computeResult();
-    const url = location.origin + location.pathname + '#result=' + top;
-    try {
-      await navigator.clipboard.writeText(url);
-      btnShare.textContent = 'Link đã sao chép!';
-      setTimeout(()=> btnShare.textContent = 'Chia sẻ', 2000);
-    } catch(e){
-      alert('Không thể sao chép. Bạn có thể copy tay: ' + url);
-    }
-  });
-
-  // if URL has hash with result, show it directly (useful for share)
-  function checkHash(){
-    const h = location.hash;
-    if (!h) return;
-    const m = h.match(/result=([a-z]+)/);
-    if (m){
-      const r = m[1];
-      if (results[r]){
-        // show that result (simulate)
-        document.getElementById('quizArea').style.display = 'none';
-        resultWrap.style.display = 'block';
-        resTitle.textContent = results[r].title;
-        resDesc.textContent = results[r].desc;
-        resQuote.textContent = results[r].quote;
-        resImg.src = results[r].img + "&" + Date.now();
-        prog.style.width = '100%';
-      }
-    }
-  }
-
-  // init
-  renderQuestion();
-  checkHash();
-</script>
+  </script>
 </body>
 </html>
